@@ -72,6 +72,33 @@ class ContactIndex extends React.Component {
     }
   };
 
+  handleUpdateContact = (updatedContact) => {
+    if (updatedContact.name === "") {
+      return { status: "failure", msg: "Please, enter a valid Name!" };
+    } else if (updatedContact.phone === "") {
+      return { status: "failure", msg: "Please, enter a valid Phone Number!" };
+    }
+
+    this.setState((previousState) => {
+      return {
+        contactList: previousState.contactList.map((obj) => {
+          if (obj.id === updatedContact.id) {
+            return {
+              ...obj,
+              name: updatedContact.name,
+              phone: updatedContact.phone,
+              email: updatedContact.email,
+            };
+          }
+          return obj;
+        }),
+        isUpdating: false,
+        selectedContact: undefined
+      };
+    });
+    return { status: "success", msg: `${updatedContact.name} was updated successfully` };
+  };
+
   handleToggleFavorites = (contact) => {
     this.setState((previousState) => {
       return {
@@ -121,9 +148,17 @@ class ContactIndex extends React.Component {
     });
   };
 
+  handleCancelUpdate = () => {
+    this.setState(() => {
+      return {
+        isUpdating: false,
+        selectedContact: undefined,
+      };
+    });
+  };
+
   handleUpdateClick = (contact) => {
-    console.log(contact);
-    this.setState((previousState) => {
+    this.setState(() => {
       return {
         isUpdating: true,
         selectedContact: contact,
@@ -150,6 +185,10 @@ class ContactIndex extends React.Component {
               <div className="col-8 offset-2 row">
                 <AddContact
                   handleAddContact={this.handleAddContact}
+                  isUpdating={this.state.isUpdating}
+                  selectedContact={this.state.selectedContact}
+                  handleCancelUpdate={this.handleCancelUpdate}
+                  handleUpdateContact={this.handleUpdateContact}
                 ></AddContact>
               </div>
             </div>
